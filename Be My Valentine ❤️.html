@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Be My Valentine ❤️</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #ff4e8a, #ff99c8);
+        text-align: center;
+        color: white;
+    }
+
+    #slideshow {
+        width: 250px;
+        height: 250px;
+        margin-bottom: 20px;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    #slideshow img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 15px;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+        animation: fadeIn 1.5s ease-in-out;
+    }
+
+    .buttons {
+        position: relative;
+        width: 300px;
+        height: 200px;
+    }
+
+    button {
+        padding: 12px 30px;
+        font-size: 18px;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    #yesBtn {
+        background-color: #28a745;
+        color: white;
+    }
+
+    #noBtn {
+        background-color: #dc3545;
+        color: white;
+        position: absolute;
+    }
+
+    button:hover {
+        transform: scale(1.1);
+    }
+
+    #result {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        animation: fadeIn 1.5s ease-in-out;
+    }
+
+    #result img {
+        width: 250px;
+        border-radius: 20px;
+        margin-top: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        animation: pop 1s ease;
+    }
+
+    #result p {
+        font-size: 1.5rem;
+        margin-top: 15px;
+        animation: colorChange 3s infinite;
+    }
+
+    @keyframes colorChange {
+        0% { color: #ff69b4; }      /* rose */
+        50% { color: #87ceeb; }     /* bleu ciel */
+        100% { color: #f8f8ff; }    /* blanc vanille */
+    }
+
+    .heart {
+        position: absolute;
+        color: white;
+        font-size: 20px;
+        animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+        0% { transform: translateY(-10vh); opacity: 1; }
+        100% { transform: translateY(110vh); opacity: 0; }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes pop {
+        0% { transform: scale(0); }
+        100% { transform: scale(1); }
+    }
+</style>
+</head>
+
+<body>
+
+<!-- Diaporama au-dessus de la phrase -->
+<div id="slideshow">
+    <img id="slideImage" src="Cat1.jpg" alt="Slideshow Image">
+</div>
+
+<h1 id="question">Will you be my Valentine? 😍</h1>
+
+<div class="buttons">
+    <button id="yesBtn">Yes</button>
+    <button id="noBtn">No</button>
+</div>
+
+<!-- Résultat après Yes -->
+<div id="result">
+    <p>You said "Yes" happy valentin's day my pretty, now you are mime and me yours. I love you too❤️ ❤️</p>
+</div>
+
+<!-- Musique -->
+<audio id="music" loop>
+    <source src="Lovecat.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const result = document.getElementById("result");
+    const question = document.getElementById("question");
+    const music = document.getElementById("music");
+    const slideImage = document.getElementById("slideImage");
+
+    // Images avant et après Yes
+    const firstImages = ["Cat1.jpg", "Cat2.jpg", "Cat3.jpg", "Cat4.jpg", "Catlove.jpg"];
+    const secondImages = ["Cat5.jpg", "Cat6.jpg", "Cat7.jpg", "Cat8.jpg", "Cat9.jpg"];
+    let currentIndex = 0;
+    let intervalId;
+
+    function startSlideshow(images, duration = 2500) {
+        intervalId = setInterval(() => {
+            currentIndex++;
+            if(currentIndex >= images.length) currentIndex = 0;
+            slideImage.src = images[currentIndex];
+        }, duration);
+    }
+
+    // Démarre diaporama des 5 premières images
+    startSlideshow(firstImages, 2500);
+
+    // Bouton No qui s'échappe
+    function moveButton() {
+        const container = document.querySelector(".buttons");
+        const maxX = container.clientWidth - noBtn.offsetWidth;
+        const maxY = container.clientHeight - noBtn.offsetHeight;
+
+        const randomX = Math.floor(Math.random() * maxX);
+        const randomY = Math.floor(Math.random() * maxY);
+
+        noBtn.style.left = randomX + "px";
+        noBtn.style.top = randomY + "px";
+    }
+
+    noBtn.addEventListener("mouseover", moveButton);
+    noBtn.addEventListener("touchstart", function(e) {
+        e.preventDefault();
+        moveButton();
+    });
+
+    // Quand on clique Yes
+    yesBtn.addEventListener("click", function() {
+        clearInterval(intervalId);          // Arrêter le diaporama précédent
+        music.play();                        // Lancer la musique en boucle
+        currentIndex = 0;                    // Début des images suivantes
+        slideImage.src = secondImages[currentIndex];
+        startSlideshow(secondImages, 2500); // Diaporama des 5 dernières images
+
+        // Masquer question et boutons, afficher résultat
+        question.style.display = "none";
+        document.querySelector(".buttons").style.display = "none";
+        result.style.display = "flex";
+    });
+
+    // Animation de cœurs
+    function createHeart() {
+        const heart = document.createElement("div");
+        heart.classList.add("heart");
+        heart.innerHTML = "❤️";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.animationDuration = (Math.random() * 3 + 2) + "s";
+        heart.style.fontSize = (Math.random() * 20 + 15) + "px";
+        document.body.appendChild(heart);
+
+        setTimeout(() => heart.remove(), 5000);
+    }
+
+    setInterval(createHeart, 300);
+</script>
+
+</body>
+</html>
